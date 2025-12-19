@@ -16,7 +16,7 @@ from utils import auth, db, graphs
 
 # Configure Streamlit page
 st.set_page_config(
-    page_title="DayMark",
+    page_title="DayMark (Beta)",
     page_icon="📓",
     layout="wide"
 )
@@ -89,7 +89,7 @@ if "data" not in st.session_state:
         "month_key": None
     }
 
-st.title("DayMark")
+st.title("DayMark (Beta)")
 
 
 # --------------------------------------------------
@@ -346,3 +346,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
