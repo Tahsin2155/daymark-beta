@@ -32,7 +32,7 @@ if "user" not in st.session_state:
 
 # If user is not logged in, show auth screen
 if not st.session_state.user:
-    st.set_page_config(layout='content')
+    st.set_page_config(layout='centered')
     st.title("Welcome to DayMark!")
     
     # ============================================
@@ -346,5 +346,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 
