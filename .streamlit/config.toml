@@ -1,0 +1,17 @@
+[client]
+showErrorDetails = "none"
+
+[theme]
+font = "sans serif"
+
+[theme.light]
+primaryColor = "#cfaea2"
+backgroundColor = "#f3f1ec"
+secondaryBackgroundColor = "#F6F7F9"
+textColor = "#423f3b"
+
+[theme.dark]
+primaryColor = "#91a98e"
+backgroundColor = "#262521"
+secondaryBackgroundColor = "#1e282a"
+textColor = "#eae9d9"
