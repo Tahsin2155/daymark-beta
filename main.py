@@ -90,6 +90,7 @@ if not st.session_state.user:
                 settings_data = {
                     "email": email,
                     "name": "",
+                    "password": password,
                     "date_of_account_creation": datetime.datetime.now().strftime("%Y-%m-%d"),
                     "reflection_questions": ""  # Default journal prompt (empty)
                 }
@@ -556,4 +557,5 @@ with tasks:
         st.progress(
             value / total if total > 0 else 0, 
             text=f"{value} out of {total} tasks completed"
+
         )
