@@ -105,6 +105,9 @@ if not st.session_state.user:
                 if mode == 'Login':
                     # Existing user: load their saved settings from database
                     st.session_state.settings = db.get_user_settings(result['localId'])
+                    if "password" not in st.session_state.settings:
+                        st.session_state.settings['password'] = password
+                        db.update_user_settings(result['localId], st.session_state.settings)
                 else:
                     # New user: save their initial settings to database
                     db.update_user_settings(result['localId'], settings_data)
@@ -559,3 +562,4 @@ with tasks:
             text=f"{value} out of {total} tasks completed"
 
         )
+
