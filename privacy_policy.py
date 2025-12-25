@@ -1,39 +1,73 @@
 import streamlit as st
 
-st.set_page_config(page_title="Privacy Policy", layout="centered")
+st.set_page_config(page_title="Privacy Policy", layout="centered", page_icon="🔒")
+
 
 st.title("Privacy Policy 🔒")
+st.caption("Last updated: December 2025")
 
-st.markdown("""
-_Last updated: January 2025_
 
-### 1. Information We Collect
-DayMark collects only the information necessary to operate:
-- Email address (for authentication)
-- Habits and completion status
-- Journal entries
-- App settings
+st.header("What DayMark collects")
+with st.container(border=True):
+	st.write("DayMark collects only what is needed to run the app:")
+	st.markdown(
+		"- Email address (for authentication)\n"
+		"- Habits and completion status\n"
+		"- Journal entries\n"
+		"- Tasks\n"
+		"- App settings (like default reflection prompts)"
+	)
 
-### 2. How Your Data Is Used
-Your data is used only to:
-- Authenticate your account
-- Store your habits and journal entries
-- Generate personal analytics
 
-### 3. Data Storage
-All data is securely stored using Firebase services.
-Your journal entries are **private** and never shared.
+st.header("How your data is used")
+with st.container(border=True):
+	st.write("Your data is used only to:")
+	st.markdown(
+		"- Authenticate your account\n"
+		"- Store your habits, journal entries, tasks, and settings\n"
+		"- Generate your personal analytics (based on your own data)"
+	)
 
-### 4. Data Sharing
-DayMark does **not**:
-- Sell your data
-- Share your data with third parties
-- Use your data for advertising
 
-### 5. Data Deletion
-If you wish to delete your account or data, you may contact the developer.
+st.header("Data storage")
+with st.container(border=True):
+	st.write(
+		"Data is stored using Firebase services. Your journal entries are private to your account and are not "
+		"shared publicly by the app. No one can see your data except you."
+	)
 
-### 6. Changes
-This policy may be updated in the future.
-Continued use of DayMark implies acceptance of updates.
-""")
+
+st.header("Data sharing")
+with st.container(border=True):
+	st.write("DayMark does not:")
+	st.markdown(
+		"- Sell your data\n"
+		"- Share your data with third parties for advertising\n"
+		"- Run social features that expose your content"
+	)
+
+
+st.header("Data deletion")
+with st.container(border=True):
+	st.write(
+		"If you want your account or data deleted, contact the developer. "
+		"(If you add an in-app deletion flow later, update this section.)"
+	)
+
+
+st.header("Changes to this policy")
+with st.container(border=True):
+	st.write(
+		"This policy may be updated over time. Continued use of DayMark means you accept the latest version."
+	)
+
+
+st.divider()
+cta1, cta2 = st.columns(2)
+with cta1:
+	if st.button("Back to DayMark", width="stretch"):
+		st.switch_page("main.py")
+
+with cta2:
+	if st.button("Terms of Use",width="stretch"): 
+		st.switch_page("terms_of_use.py")

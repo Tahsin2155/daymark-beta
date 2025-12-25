@@ -21,7 +21,7 @@
 # ============================================================================
 
 import streamlit as st
-import datetime
+import datetime, copy, time
 import pandas as pd
 from utils import auth, db, graphs
 
@@ -33,7 +33,6 @@ from utils import auth, db, graphs
 # It sets the browser tab title, icon, and layout style.
 st.set_page_config(
     page_title="DayMark",
-    page_icon="📓",
     layout="wide"
 )
 
@@ -90,7 +89,6 @@ if not st.session_state.user:
                 settings_data = {
                     "email": email,
                     "name": "",
-                    "password": password,
                     "date_of_account_creation": datetime.datetime.now().strftime("%Y-%m-%d"),
                     "reflection_questions": ""  # Default journal prompt (empty)
                 }
@@ -105,9 +103,6 @@ if not st.session_state.user:
                 if mode == 'Login':
                     # Existing user: load their saved settings from database
                     st.session_state.settings = db.get_user_settings(result['localId'])
-                    if "password" not in st.session_state.settings:
-                        st.session_state.settings['password'] = password
-                        db.update_user_settings(result['localId'], st.session_state.settings)
                 else:
                     # New user: save their initial settings to database
                     db.update_user_settings(result['localId'], settings_data)
@@ -180,20 +175,32 @@ day_key = selected_date.strftime("%d")               # e.g., "21"
 # Get the user's unique ID from Firebase (used for database paths)
 user_id = st.session_state.user['localId']
 
+if "savedchanges" not in st.session_state:
+    st.session_state.savedchanges = copy.deepcopy(st.session_state.data)
+
+if "last_autosave" not in st.session_state:
+    # Initialize so the first autosave doesn't happen immediately.
+    st.session_state.last_autosave = time.time()
 
 # ----------------------------------------
 # Save Function
 # ----------------------------------------
 # This function saves all current data (habits, journal, tasks) to the database
-def save():
+def save(data=None):
     """Save all current month's data to Firestore database."""
-    db.save_month_data(
-        user_id,
-        current_month_key,
-        st.session_state.data["habits"],
-        st.session_state.data["journal"],
-        st.session_state.data["tasks"]
-    )
+    if data is None:
+        data = st.session_state.data
+
+    if data != st.session_state.savedchanges:
+        db.save_month_data(
+            user_id,
+            current_month_key,
+            data["habits"],
+            data["journal"],
+            data["tasks"]
+        )
+        st.session_state.savedchanges = copy.deepcopy(st.session_state.data)
+        st.session_state.last_autosave = time.time()
 
 
 # ----------------------------------------
@@ -205,13 +212,7 @@ def logout():
     # Try to save current data before logging out (wrapped in try/except for safety)
     try:
         if st.session_state.get("data"):
-            db.save_month_data(
-                user_id,
-                current_month_key,
-                st.session_state.data.get("habits", {}),
-                st.session_state.data.get("journal", {}),
-                st.session_state.data.get("tasks", {})
-            )
+            save(st.session_state.data)
     except Exception:
         pass  # Ignore errors during logout - user is leaving anyway
     
@@ -224,12 +225,21 @@ def logout():
 
 # Add the buttons to the header columns
 # on_click runs the function when button is pressed
-hcol2.button("Save Changes", width='stretch',type='primary', on_click=save)
+hcol2.button("Save Changes", width='stretch',type='primary', on_click=save, args=(st.session_state.data,))
 hcol3.button('Logout', on_click=logout, width='stretch')
+
+if "last_autosave" in st.session_state:
+    st.caption(
+        f"Last saved at {time.strftime('%H:%M:%S', time.localtime(st.session_state.last_autosave))}"
+    )
 
 
 # Show a reminder to save before leaving
-st.info('⚠️ Remember: Click "Save Changes" before refreshing or closing the tab!')
+st.info(
+    'Auto-save: while you keep using the app, DayMark saves in the background about every 1–1.5 minutes.\n'
+    'Logout also saves before exiting. It is still recommended to click "Save Changes" after important edits.\n\n'
+    'Privacy: only you can see your habits, journal entries, and tasks.'
+)
 
 
 # ============================================================================
@@ -261,6 +271,8 @@ if current_month_key != st.session_state.data["month_key"]:
     st.session_state.data["journal"] = journals
     st.session_state.data["tasks"] = tasks
     st.session_state.data["month_key"] = current_month_key  # Remember which month we loaded
+
+    st.session_state.savedchanges = copy.deepcopy(st.session_state.data)
 
     # Refresh the page so all widgets show the new data
     st.rerun()
@@ -560,7 +572,23 @@ with tasks:
         st.progress(
             value / total if total > 0 else 0, 
             text=f"{value} out of {total} tasks completed"
-
         )
 
 
+
+# ============================================================================
+# INTERACTION-BASED AUTOSAVE
+# ============================================================================
+# Streamlit reruns this script whenever the user interacts with the app.
+# So “continuous interaction” naturally produces reruns.
+#
+# We autosave on those reruns (not via forced refresh) roughly every 1–1.5 minutes.
+# This avoids constant writes while still protecting users from accidental loss.
+
+now = time.time()
+if (now - st.session_state.last_autosave) >= 60:
+    try:
+        save(st.session_state.data)
+    except Exception:
+        # Autosave should never block the UI.
+        pass

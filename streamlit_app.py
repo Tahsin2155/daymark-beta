@@ -1,4 +1,12 @@
 import streamlit as st
+from datetime import datetime
+
+st.set_page_config(page_icon='assets/logo.png')
+
+
+st.logo('assets/logo.png', size='large', icon_image='assets/logo.png', link='https://daymark.streamlit.app')
+
+
 
 pages = [
     st.Page(
@@ -39,25 +47,27 @@ pages = [
     st.Page(
         'privacy_policy.py',
         title='Privacy & Policy',
-        url_path='pp',
+        url_path='privacypolicy',
         icon=':material/privacy_tip:'
     ),
 
     st.Page(
         'terms_of_use.py',
         title='Terms of Use',
-        url_path='tou',
+        url_path='termsofuse',
         icon=':material/gavel:'
     ),
 ]
 
+if ('user' not in st.session_state) or (st.session_state.user == None):
+    del pages[2]  # Remove Settings if not logged in
 
-current = st.navigation(pages, position="sidebar")
+current = st.navigation(pages, position="sidebar" if st.session_state.get('user') else "top")
 current.run()
 
+
+
 # footer…
-
-
 
 st.markdown(
     """
@@ -71,3 +81,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
