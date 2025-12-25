@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Privacy Policy", layout="centered", page_icon="🔒")
+st.set_page_config(page_title="Privacy Policy", layout="centered")
 
 
 st.title("Privacy Policy 🔒")

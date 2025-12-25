@@ -8,9 +8,6 @@ Tip: You can optionally add your own media files:
 - docs/daymark_intro.mp4      (shown in the "Quick tour" section)
 """
 
-from __future__ import annotations
-
-from pathlib import Path
 
 import streamlit as st
 

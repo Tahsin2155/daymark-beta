@@ -1,7 +1,7 @@
 import streamlit as st
 
 
-st.set_page_config(page_title="About DayMark", layout="centered", page_icon="📓")
+st.set_page_config(page_title="About DayMark", layout="centered")
 
 
 st.title("About DayMark 📓")

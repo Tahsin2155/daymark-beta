@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Terms of Use", layout="centered", page_icon="📜")
+st.set_page_config(page_title="Terms of Use", layout="centered")
 
 
 st.title("Terms of Use 📜")
