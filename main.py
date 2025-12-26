@@ -474,6 +474,11 @@ with tasks:
         st.header("Tasks Management")
         st.write("Manage your tasks for the selected day.")
 
+        
+        # Get today's tasks (empty dict if none exist)
+        task_today = current_task_data.get(day_key, {})
+
+        
         # Add/Remove task buttons in a popover
         with st.popover("Manage Tasks"):
             add_task, remove_task = st.tabs(["Add Task", "Remove Task"])
@@ -505,8 +510,6 @@ with tasks:
                         st.success(f'Removed task: {task_to_remove}')
                         st.rerun()
        
-        # Get today's tasks (empty dict if none exist)
-        task_today = current_task_data.get(day_key, {})
         
         # Display each task as a checkbox
         for task, completed in task_today.items():
@@ -593,4 +596,5 @@ if (now - st.session_state.last_autosave) >= 60:
     except Exception:
         # Autosave should never block the UI.
         pass
+
 
