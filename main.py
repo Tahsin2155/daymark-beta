@@ -459,6 +459,82 @@ with journal:
 
 
 # ============================================================================
+# TASKS TAB
+# ============================================================================
+# Unlike habits (which repeat daily), tasks are one-time to-do items.
+# Each day can have its own set of tasks.
+# Tasks are stored as: {"21": {"Buy groceries": True, "Call mom": False}}
+
+with tasks:
+    # Split into two columns: task list on left, progress on right
+    tsk, progress = st.columns(2)
+
+    # --- TASK LIST ---
+    with tsk.container(border=True):
+        st.header("Tasks Management")
+        st.write("Manage your tasks for the selected day.")
+
+        # Add/Remove task buttons in a popover
+        with st.popover("Manage Tasks"):
+            add_task, remove_task = st.tabs(["Add Task", "Remove Task"])
+            
+            # --- ADD NEW TASK ---
+            with add_task:
+                new_task_name = st.text_input("Enter New Task Name", placeholder="Task Name")
+                
+                if st.button("Add Task"):
+                    if new_task_name:
+                        task_today[new_task_name] = False  # New tasks start unchecked
+                        current_task_data[day_key] = task_today  # Save to data
+                        st.success(f'Added task: {new_task_name}')
+                        st.rerun()
+                    else:
+                        st.error("Please enter a task name.")
+            
+            # --- REMOVE TASK ---
+            with remove_task:
+                task_to_remove = st.selectbox(
+                    "Select Task to Remove",
+                    task_today.keys()
+                )
+                
+                if st.button("Remove Task", disabled=bool(not task_to_remove)):
+                    if task_to_remove in task_today:
+                        del task_today[task_to_remove]
+                        current_task_data[day_key] = task_today
+                        st.success(f'Removed task: {task_to_remove}')
+                        st.rerun()
+       
+        # Get today's tasks (empty dict if none exist)
+        task_today = current_task_data.get(day_key, {})
+        
+        # Display each task as a checkbox
+        for task, completed in task_today.items():
+            task_today[task] = st.checkbox(
+                task,
+                value=completed,
+                key=f"{day_key}_{task}"  # Unique key per day per task
+            )
+        
+
+    # --- PROGRESS DISPLAY ---
+    with progress.container(border=True, height='stretch'):
+        st.header("Task Completion Progress")
+        st.write("Track your task completion progress for the day.")
+        
+        # Count how many tasks are done
+        value = sum(1 for v in current_task_data.get(day_key, {}).values() if v)
+        total = len(current_task_data.get(day_key, {}))
+        
+        # Show a progress bar
+        st.progress(
+            value / total if total > 0 else 0, 
+            text=f"{value} out of {total} tasks completed"
+        )
+
+
+
+# ============================================================================
 # ANALYTICS TAB
 # ============================================================================
 # This tab displays visualizations of habit data:
@@ -502,81 +578,6 @@ with graph:
 
 
 # ============================================================================
-# TASKS TAB
-# ============================================================================
-# Unlike habits (which repeat daily), tasks are one-time to-do items.
-# Each day can have its own set of tasks.
-# Tasks are stored as: {"21": {"Buy groceries": True, "Call mom": False}}
-
-with tasks:
-    # Split into two columns: task list on left, progress on right
-    tsk, progress = st.columns(2)
-
-    # --- TASK LIST ---
-    with tsk.container(border=True):
-        st.header("Tasks Management")
-        st.write("Manage your tasks for the selected day.")
-
-        # Get today's tasks (empty dict if none exist)
-        task_today = current_task_data.get(day_key, {})
-        
-        # Display each task as a checkbox
-        for task, completed in task_today.items():
-            task_today[task] = st.checkbox(
-                task,
-                value=completed,
-                key=f"{day_key}_{task}"  # Unique key per day per task
-            )
-        
-        # Add/Remove task buttons in a popover
-        with st.popover("Manage Tasks"):
-            add_task, remove_task = st.tabs(["Add Task", "Remove Task"])
-            
-            # --- ADD NEW TASK ---
-            with add_task:
-                new_task_name = st.text_input("Enter New Task Name", placeholder="Task Name")
-                
-                if st.button("Add Task"):
-                    if new_task_name:
-                        task_today[new_task_name] = False  # New tasks start unchecked
-                        current_task_data[day_key] = task_today  # Save to data
-                        st.success(f'Added task: {new_task_name}')
-                        st.rerun()
-                    else:
-                        st.error("Please enter a task name.")
-            
-            # --- REMOVE TASK ---
-            with remove_task:
-                task_to_remove = st.selectbox(
-                    "Select Task to Remove",
-                    task_today.keys()
-                )
-                
-                if st.button("Remove Task", disabled=bool(not task_to_remove)):
-                    if task_to_remove in task_today:
-                        del task_today[task_to_remove]
-                        current_task_data[day_key] = task_today
-                        st.success(f'Removed task: {task_to_remove}')
-                        st.rerun()
-
-    # --- PROGRESS DISPLAY ---
-    with progress.container(border=True, height='stretch'):
-        st.header("Task Completion Progress")
-        st.write("Track your task completion progress for the day.")
-        
-        # Count how many tasks are done
-        value = sum(1 for v in current_task_data.get(day_key, {}).values() if v)
-        total = len(current_task_data.get(day_key, {}))
-        
-        # Show a progress bar
-        st.progress(
-            value / total if total > 0 else 0, 
-            text=f"{value} out of {total} tasks completed"
-        )
-
-
-
-# ============================================================================
 # INTERACTION-BASED AUTOSAVE
 # ============================================================================
 # Streamlit reruns this script whenever the user interacts with the app.
@@ -592,3 +593,4 @@ if (now - st.session_state.last_autosave) >= 60:
     except Exception:
         # Autosave should never block the UI.
         pass
+
