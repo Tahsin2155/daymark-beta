@@ -485,7 +485,7 @@ with tasks:
             
             # --- ADD NEW TASK ---
             with add_task:
-                new_task_name = st.text_input("Enter New Task Name", placeholder="Task Name")
+                new_task_name = st.text_input("Enter New Task Name", value="", placeholder="Task Name")
                 
                 if st.button("Add Task"):
                     if new_task_name:
@@ -596,5 +596,6 @@ if (now - st.session_state.last_autosave) >= 60:
     except Exception:
         # Autosave should never block the UI.
         pass
+
 
 
