@@ -1,9 +1,6 @@
 [client]
 #showErrorDetails = "none"
 
-[server]
-runOnSave = true
-
 [theme]
 font = "Inter, -apple-system, Segoe UI, sans-serif"
 
@@ -18,4 +15,5 @@ primaryColor = "#8FAE9B"
 backgroundColor = "#1F2624"
 secondaryBackgroundColor = "#2A3330"
 textColor = "#ECEDE9"
+
 
