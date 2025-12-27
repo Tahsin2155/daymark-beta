@@ -1,0 +1,9 @@
+Firestore                          App (session_state)                 UI (DataFrame)
+────────────────────────────────────────────────────────────────────────────────────
+users/{uid}/{YYYY-MM}/habits  →    {"Gym": {"1": T, "2": F, ...}}  →   Rows: Gym, Read
+  {"Gym": {"1": T, "2": F}}                                            Cols: "1", "2", "3"...
+                                                                       
+users/{uid}/{YYYY-MM}/journal →    {"1": "entry", "15": "entry"}  →   text_area per day
+  {"1": "entry text"}
+  
+users/{uid}/settings/profile  →    {"email": "...", "name": "..."}

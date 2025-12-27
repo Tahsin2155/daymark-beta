@@ -1,0 +1,57 @@
+users (Collection)
+  │
+  └── {uid} (Document) ← Firebase Auth User ID (e.g., "a1b2c3d4e5f6...")
+        │
+        ├── settings (Sub-Collection)
+        │     │
+        │     └── profile (Document)
+        │           ├── email: "user@example.com"
+        │           ├── name: "John Doe" (optional, future use)
+        │           ├── date_of_acc_creation: "2025-12-18"
+        │           └── reflection_questions: [...] (optional, future use)
+        │
+        └── 2025-12 (Sub-Collection) ← Month key (YYYY-MM format)
+             │
+              ├── habits (Document)
+              │     ├── "Gym": {"1": false, "2": true, "3": false, ..., "31": true}
+              │     ├── "Read": {"1": true, "2": true, "3": false, ..., "30": false}
+              │     └── "Meditate": {"1": false, "2": false, ..., "31": true}
+              │     
+              │     [Each habit name is a field, value is a map of day → boolean]
+              │     [Days are strings "1" to "31" depending on month length]
+              │ 
+              └── journal (Document)
+                    ├── "1": "Today was great! Started new project..."
+                    ├── "2": "Had a productive day at work..."
+                    ├── "15": "Feeling motivated..."
+                    └── "25": "Christmas preparation going well..."
+                    
+                    [Day number as field (string "1"-"31"), value is journal text]
+        
+
+
+habits json:- 
+
+{
+    "habit-1": {"1": false, "2": true, "3": false},
+    "habit-2": {"1": false, "2": true, "3": false},
+    "habit-3": {"1": false, "2": true, "3": false}
+}
+
+# so in this way we can store habits and their logs in one file. and every month we can create a new document to store habits and their logs, also the user will have to add habits every month (either same or new).
+
+
+journal json:- 
+
+{
+    "1": "journal entry",
+    "2": "journal entry",
+    "3": "journal entry"
+}
+
+settings json:-
+
+{
+    "date of acc creation": "YYYY-MM-DD",
+    "email": "email@email.com"
+}
