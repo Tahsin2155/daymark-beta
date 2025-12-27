@@ -57,7 +57,17 @@ with cta_col1:
         st.switch_page("main.py")
 with cta_col2:
     if st.button("📖 Learn More", width='stretch'):
-        st.write("")  # Scroll down handled by page flow
+            st.components.v1.html(
+                """
+                <script>
+                const el = parent.document.getElementById("what-you-can-do-with-daymark");
+                if (el) {
+                    el.scrollIntoView({behavior: "smooth"});
+                }
+                </script>
+                """,
+                height=0,
+            )
 
 # Trust signals (Task 3)
 st.markdown("---")
@@ -315,4 +325,5 @@ with footer3:
         st.switch_page("terms_of_use.py")
 
 st.caption(f"Version {VERSION} · Last updated: {LAST_UPDATED}")
+
 
