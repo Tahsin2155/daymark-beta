@@ -1,5 +1,5 @@
 [client]
-showErrorDetails = "none"
+#showErrorDetails = "none"
 
 [server]
 runOnSave = true
@@ -18,3 +18,4 @@ primaryColor = "#8FAE9B"
 backgroundColor = "#1F2624"
 secondaryBackgroundColor = "#2A3330"
 textColor = "#ECEDE9"
+
