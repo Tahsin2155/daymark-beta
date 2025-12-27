@@ -1,5 +1,5 @@
 [client]
-#showErrorDetails = "none"
+showErrorDetails = "none"
 
 [theme]
 font = "Inter, -apple-system, Segoe UI, sans-serif"
