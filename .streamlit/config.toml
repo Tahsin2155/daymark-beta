@@ -1,1 +1,20 @@
+[client]
+showErrorDetails = "none"
 
+[server]
+runOnSave = true
+
+[theme]
+font = "Inter, -apple-system, Segoe UI, sans-serif"
+
+[theme.light]
+primaryColor = "#7E9B8A"
+backgroundColor = "#FAFAF7"
+secondaryBackgroundColor = "#EFE8E2"
+textColor = "#2F2F2F"
+
+[theme.dark]
+primaryColor = "#8FAE9B"
+backgroundColor = "#1F2624"
+secondaryBackgroundColor = "#2A3330"
+textColor = "#ECEDE9"
