@@ -543,3 +543,6 @@ if (now - st.session_state.last_autosave) >= 60:
     except Exception:
         # Autosave should never block the UI.
         pass
+
+    st.rerun()
+
