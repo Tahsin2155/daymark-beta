@@ -1,3 +1,149 @@
+import streamlit as st
+from datetime import datetime
+from zoneinfo import ZoneInfo
+import time
+
+
+# -------------------------------
+# Page config
+# -------------------------------
+st.set_page_config(
+    page_title="DayMark",
+    layout="centered"
+)
+
+
+# -------------------------------
+# IST timezone (server-enforced)
+# -------------------------------
+IST = ZoneInfo(st.context.timezone)
+
+TARGET_TIME_IST = datetime(2025, 1, 1, 0, 0, 0, tzinfo=IST)
+now_ist = datetime.now(IST)
+
+
+# ============================================================
+# BEFORE LAUNCH — apply ALL custom CSS + landing UI
+# ============================================================
+if now_ist < TARGET_TIME_IST:
+
+    # ---------- Scoped CSS ----------
+    st.markdown("""
+    <style>
+        .block-container {
+            padding-top: 4rem;
+            padding-bottom: 4rem;
+        }
+
+        /* HEADINGS */
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            text-align: center;
+            opacity: 0.7;
+            margin-bottom: 3rem;
+            font-size: 1.05rem;
+        }
+
+        /* FLEX CONTAINER UPDATES */
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; 
+            gap: 2rem;
+            margin: 0 auto;
+        }
+
+        /* BOX STYLING */
+        .countdown-box {
+            border-radius: 18px;
+            padding: 1.75rem 2rem;
+            min-width: 120px;
+            text-align: center;
+            
+            /* Subtle border for definition in both themes */
+            border: 1px solid rgba(128, 128, 128, 0.2);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            
+            flex: 1 1 150px; 
+            max-width: 200px;
+        }
+
+        /* NUMBERS: UPDATED TO MATCH THEME TEXT */
+        .countdown-number {
+            font-size: 2.75rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .countdown-label {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.6;
+        }
+
+        /* MOBILE RESPONSIVE TWEAKS */
+        @media (max-width: 600px) {
+            h1 { font-size: 2rem; }
+            .countdown-container { gap: 1rem; }
+            .countdown-box { padding: 1rem; min-width: 130px; }
+            .countdown-number { font-size: 2rem; }
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # ---------- Countdown Logic ----------
+    remaining = TARGET_TIME_IST - now_ist
+    placeholder = st.empty()
+
+    days = remaining.days
+    hours, rem = divmod(remaining.seconds, 3600)
+    minutes, seconds = divmod(rem, 60)
+
+    with placeholder.container():
+        st.markdown("<h1>DayMark</h1>", unsafe_allow_html=True)
+        st.markdown(
+            "<div class='subtitle'>Launching on 1 January 2026</div>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(f"""
+        <div class="countdown-container">
+            <div class="countdown-box">
+                <div class="countdown-number">{days}</div>
+                <div class="countdown-label">Days</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-number">{hours:02d}</div>
+                <div class="countdown-label">Hours</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-number">{minutes:02d}</div>
+                <div class="countdown-label">Minutes</div>
+            </div>
+            <div class="countdown-box">
+                <div class="countdown-number">{seconds:02d}</div>
+                <div class="countdown-label">Seconds</div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.divider()
+        if st.button('Introduction To DayMark', width='stretch', type='primary', key='intro_button'):
+            st.switch_page('intro.py')
+
+    time.sleep(1)
+    st.rerun()
+
+
+
 # ============================================================================
 # DAYMARK - Habit Tracker & Journal App
 # ============================================================================
@@ -23,8 +169,12 @@
 import streamlit as st
 import datetime, copy, time
 import pandas as pd
+from zoneinfo import ZoneInfo
 from utils import db, graphs
 from utils.auth import show_auth_page
+
+# App timezone
+IST = ZoneInfo(st.context.timezone)
 
 
 # ============================================================================
@@ -111,9 +261,9 @@ hcol1, hcol2, hcol3 = st.columns([5, 2, 2])
 selected_date = hcol1.date_input(
     "Select Date",
     "today",
-    max_value='today',  # Can't select future dates
+    max_value=datetime.datetime.now(tz=IST),  # Can't select future dates
     min_value=st.session_state.settings['date_of_account_creation'],
-    label_visibility='collapsed'  # Hide the label for cleaner look
+    label_visibility='collapsed',  # Hide the label for cleaner look
 )
 
 # Extract the month ("YYYY-MM") and day ("DD") from the selected date
@@ -178,9 +328,11 @@ hcol2.button("Save Changes", width='stretch',type='primary', on_click=save, args
 hcol3.button('Logout', on_click=logout, width='stretch')
 
 if "last_autosave" in st.session_state:
-    st.caption(
-        f"Last saved at {time.strftime('%H:%M:%S', time.localtime(st.session_state.last_autosave))}"
+    # Convert timestamp to IST for display
+    last_save_ist = datetime.datetime.fromtimestamp(
+        st.session_state.last_autosave, tz=IST
     )
+    st.caption(f"Last saved at {last_save_ist.strftime('%H:%M:%S')}")
 
 
 # Show a reminder to save before leaving
@@ -275,25 +427,26 @@ with habit:
 
         # --- ADD A NEW HABIT ---
         with add:
-            new_habit_name = st.text_input("Enter New Habits Name", placeholder="Habit Name")
+            with st.form("add_habit_form"):
+                new_habit_name = st.text_input("Enter New Habits Name", placeholder="Habit Name")
 
-            if st.button("Add Habit"):
-                if new_habit_name:  # Make sure they entered a name
-                    # Create the new habit with False for every day of the month
-                    # pd.Period gives us how many days are in the current month
-                    days_in_month = pd.Period(current_month_key).days_in_month
-                    current_habit_data[new_habit_name] = {
-                        str(d): False for d in range(1, days_in_month + 1)
-                    }  # Creates: {"1": False, "2": False, ...}
-                    
-                    # Delete the cached grid so it rebuilds with the new habit
-                    if "habit_grid_df" in st.session_state:
-                        del st.session_state.habit_grid_df
-                    
-                    st.success(f'Added {new_habit_name}')
-                    st.rerun()  # Refresh to show the new habit
-                else:
-                    st.error("Please enter a habit name.")
+                if st.form_submit_button("Add Habit"):
+                    if new_habit_name:  # Make sure they entered a name
+                        # Create the new habit with False for every day of the month
+                        # pd.Period gives us how many days are in the current month
+                        days_in_month = pd.Period(current_month_key).days_in_month
+                        current_habit_data[new_habit_name] = {
+                            str(d): False for d in range(1, days_in_month + 1)
+                        }  # Creates: {"1": False, "2": False, ...}
+                        
+                        # Delete the cached grid so it rebuilds with the new habit
+                        if "habit_grid_df" in st.session_state:
+                            del st.session_state.habit_grid_df
+                        
+                        st.success(f'Added {new_habit_name}')
+                        st.rerun()  # Refresh to show the new habit
+                    else:
+                        st.error("Please enter a habit name.")
 
         # --- DELETE AN EXISTING HABIT ---
         with delete:
@@ -434,16 +587,17 @@ with tasks:
             
             # --- ADD NEW TASK ---
             with add_task:
-                new_task_name = st.text_input("Enter New Task Name", placeholder="Task Name")
-                
-                if st.button("Add Task"):
-                    if new_task_name:
-                        task_today[new_task_name] = False  # New tasks start unchecked
-                        current_task_data[day_key] = task_today  # Save to data
-                        st.success(f'Added task: {new_task_name}')
-                        st.rerun()
-                    else:
-                        st.error("Please enter a task name.")
+                with st.form("add_task_form"):
+                    new_task_name = st.text_input("Enter New Task Name", placeholder="Task Name")
+                    
+                    if st.form_submit_button("Add Task"):
+                        if new_task_name:
+                            task_today[new_task_name] = False  # New tasks start unchecked
+                            current_task_data[day_key] = task_today  # Save to data
+                            st.success(f'Added task: {new_task_name}')
+                            st.rerun()
+                        else:
+                            st.error("Please enter a task name.")
             
             # --- REMOVE TASK ---
             with remove_task:
@@ -543,6 +697,3 @@ if (now - st.session_state.last_autosave) >= 60:
     except Exception:
         # Autosave should never block the UI.
         pass
-
-    st.rerun()
-

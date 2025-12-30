@@ -12,6 +12,7 @@ from datetime import datetime
 st.set_page_config(page_icon='assets/logo.png')
 
 
+
 st.logo('assets/logo.png', size='large', icon_image='assets/logo.png', link='https://daymark.streamlit.app')
 
 

@@ -10,10 +10,11 @@ import os
 import streamlit as st
 
 
+
 # =============================================================================
 # CONSTANTS
 # =============================================================================
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 LAST_UPDATED = "28 December 2025"
 
 
@@ -50,24 +51,16 @@ st.write(
     "steady progress without the pressure of streaks, public feeds, or perfection."
 )
 
+if st.button("🚀 Get Started Free", width='stretch', type="primary"):
+    st.switch_page("main.py")
 # Prominent CTA at top (Task 2)
-cta_col1, cta_col2 = st.columns(2)
-with cta_col1:
-    if st.button("🚀 Get Started Free", width='stretch', type="primary"):
-        st.switch_page("main.py")
-with cta_col2:
-    if st.button("📖 Learn More", width='stretch'):
-            st.components.v1.html(
-                """
-                <script>
-                const el = parent.document.getElementById("what-you-can-do-with-daymark");
-                if (el) {
-                    el.scrollIntoView({behavior: "smooth"});
-                }
-                </script>
-                """,
-                height=0,
-            )
+# cta_col1, cta_col2 = st.columns(2)
+# with cta_col1:
+#     if st.button("🚀 Get Started Free", width='stretch', type="primary"):
+#         st.switch_page("main.py")
+# with cta_col2:
+#     if st.button("📖 Learn More", width='stretch'):
+#         st.write("")  # Scroll down handled by page flow
 
 # Trust signals (Task 3)
 st.markdown("---")
@@ -325,5 +318,4 @@ with footer3:
         st.switch_page("terms_of_use.py")
 
 st.caption(f"Version {VERSION} · Last updated: {LAST_UPDATED}")
-
 

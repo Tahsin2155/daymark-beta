@@ -22,6 +22,7 @@ import datetime
 import re
 import requests
 import streamlit as st
+from zoneinfo import ZoneInfo
 from utils import db
 
 
@@ -29,6 +30,7 @@ from utils import db
 # CONSTANTS
 # =============================================================================
 MIN_PASSWORD_LENGTH = 8  # Firebase minimum requirement
+IST = ZoneInfo("Asia/Kolkata")  # App timezone
 
 # Pre-compiled email regex (avoids recompiling on every validation)
 _EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
@@ -230,7 +232,7 @@ def create_user_settings(email: str, password: str) -> dict:
         "email": email,
         "name": "",
         "password": password,
-        "date_of_account_creation": datetime.datetime.now().strftime("%Y-%m-%d"),
+        "date_of_account_creation": datetime.datetime.now(IST).strftime("%Y-%m-%d"),
         "reflection_questions": ""
     }
 
@@ -462,7 +464,7 @@ def show_auth_page_legacy() -> None:
                 settings_data = {
                     "email": email,
                     "name": "",
-                    "date_of_account_creation": datetime.datetime.now().strftime("%Y-%m-%d"),
+                    "date_of_account_creation": datetime.datetime.now(IST).strftime("%Y-%m-%d"),
                     "reflection_questions": ""
                 }
 

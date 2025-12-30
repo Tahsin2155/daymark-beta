@@ -172,7 +172,7 @@ def plot_habit_consistency(habit_totals):
         y=totals,                        # Y-axis: completion counts
         marker=dict(
             color=totals,                # Color intensity based on value
-            colorscale='Viridis',        # Green → yellow → purple gradient
+            colorscale='viridis',        # Green → yellow → purple gradient
             showscale=True               # Show the color legend
         ),
         text=totals,                     # Show numbers on top of bars
@@ -211,8 +211,8 @@ def plot_individual_trends(habits_data, selected_habits):
     fig = go.Figure()
     
     # Define colors for each line (cycles if more than 5 habits)
-    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd']
-    #          blue       orange     green      red        purple
+    colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2']
+    #          blue         orange          green       red         purple          brown        pink
     
     # Add a line for each selected habit
     for idx, habit_name in enumerate(selected_habits):
@@ -236,7 +236,7 @@ def plot_individual_trends(habits_data, selected_habits):
     fig.update_layout(
         title='Individual Habit Trends - Daily Completion',
         xaxis_title='Day of Month',
-        yaxis_title='Completed (1) or Not (0)',
+        yaxis_title='Completed or Not',
         hovermode='x unified',
         height=400,
         yaxis=dict(
@@ -246,3 +246,4 @@ def plot_individual_trends(habits_data, selected_habits):
     )
     
     return fig
+
