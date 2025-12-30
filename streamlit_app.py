@@ -9,7 +9,7 @@ Last updated: 28 December 2025
 import streamlit as st
 from datetime import datetime
 
-st.set_page_config(page_icon='assets/logo.png')
+st.set_page_config(page_icon='assets/logo.png', layout='centered')
 
 
 

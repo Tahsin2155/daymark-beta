@@ -8,8 +8,7 @@ import time
 # Page config
 # -------------------------------
 st.set_page_config(
-    page_title="DayMark",
-    layout="centered"
+    page_title="DayMark"
 )
 
 
@@ -260,10 +259,10 @@ hcol1, hcol2, hcol3 = st.columns([5, 2, 2])
 # This determines which month's data we load and which day's journal we show
 selected_date = hcol1.date_input(
     "Select Date",
-    "today",
+    datetime.datetime.now(tz=IST),
     max_value=datetime.datetime.now(tz=IST),  # Can't select future dates
     min_value=st.session_state.settings['date_of_account_creation'],
-    label_visibility='collapsed',  # Hide the label for cleaner look
+    label_visibility='collapsed' # Hide the label for cleaner look
 )
 
 # Extract the month ("YYYY-MM") and day ("DD") from the selected date
